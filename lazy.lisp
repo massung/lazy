@@ -1,4 +1,4 @@
- ;;;; Lazy forms in Common Lisp
+;;;; Lazy forms in Common Lisp
 ;;;;
 ;;;; Copyright (c) Jeffrey Massung
 ;;;;
