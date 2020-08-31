@@ -29,7 +29,7 @@
 
 (defclass thunk ()
   ((form  :initarg :form)
-   (value :initarg :value))
+   (values :initarg :values))
   (:documentation "A form to be evaluated later."))
 
 ;;; ----------------------------------------------------
@@ -37,7 +37,7 @@
 (defmethod print-object ((obj thunk) stream)
   "Output a lazy form."
   (print-unreadable-object (obj stream :type t)
-    (if (slot-boundp obj 'value)
+    (if (slot-boundp obj 'values)
         (prin1 (lazy-value obj) stream)
       (princ "UNREALIZED" stream))))
 
@@ -45,7 +45,7 @@
 
 (defmethod thunk-realized-p ((thunk thunk))
   "T if the thunk has been realized to a value."
-  (slot-boundp thunk 'value))
+  (slot-boundp thunk 'values))
 
 ;;; ----------------------------------------------------
 
@@ -57,8 +57,9 @@
 
 (defun lazy-value (thunk)
   "Get the value of a lazy form."
-  (with-slots (form value)
+  (with-slots (form values)
       thunk
-    (if (thunk-realized-p thunk)
-        value
-      (setf value (funcall form)))))
+    (unless (thunk-realized-p thunk)
+      (setf values (multiple-value-list
+                    (funcall form))))
+    (values-list values)))
